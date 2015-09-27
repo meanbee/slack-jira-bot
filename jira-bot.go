@@ -47,8 +47,6 @@ func main() {
 }
 
 func handleIncomingMessage(message slack.Msg) {
-	api := getSlackAPI()
-
 	messageFrom := message.Username
 	messageText := message.Text
 
@@ -60,19 +58,31 @@ func handleIncomingMessage(message slack.Msg) {
 	re := regexp.MustCompile(`\b(\w+)-(\d+)\b`)
 	matches := re.FindAllString(messageText, -1)
 
+	for i := 0; i < len(matches); i++ {
+		issueID := matches[i]
+		log.Printf("handleMessage: Identified " + issueID + " in message")
+
+		respondToIssueMentioned(message.Channel, issueID)
+	}
+}
+
+func respondToIssueMentioned(channel string, issueID string) {
+	defer func() {
+		if e := recover(); e != nil {
+			log.Printf("Exception responding to issue %s: %v", issueID, e)
+		}
+	}()
+
+	api := getSlackAPI()
+
 	params := slack.PostMessageParameters{
 		Username: getConfig().Username,
 		Markdown: true,
 	}
 
-	for i := 0; i < len(matches); i++ {
-		issueID := matches[i]
-		log.Printf("handleMessage: Identified " + issueID + " in message")
+	issueData := getJiraIssue(issueID)
 
-		issueData := getJiraIssue(issueID)
-
-		api.PostMessage(message.Channel, formatMessage(issueData), params)
-	}
+	api.PostMessage(channel, formatMessage(issueData), params)
 }
 
 func getSlackAPI() *slack.Client {
