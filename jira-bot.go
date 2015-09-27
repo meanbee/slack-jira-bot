@@ -32,7 +32,7 @@ func main() {
 		case msg := <-rtm.IncomingEvents:
 			switch ev := msg.Data.(type) {
 			case *slack.MessageEvent:
-				handleMessage(ev.Msg)
+				handleIncomingMessage(ev.Msg)
 			case *slack.LatencyReport:
 				log.Printf("main: Current latency: %v\n", ev.Value)
 			case *slack.RTMError:
@@ -46,7 +46,7 @@ func main() {
 	}
 }
 
-func handleMessage(message slack.Msg) {
+func handleIncomingMessage(message slack.Msg) {
 	api := getSlackAPI()
 
 	messageFrom := message.Username
