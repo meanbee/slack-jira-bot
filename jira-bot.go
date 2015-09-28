@@ -55,8 +55,7 @@ func handleIncomingMessage(message slack.Msg) {
 		return
 	}
 
-	re := regexp.MustCompile(`\b(\w+)-(\d+)\b`)
-	matches := re.FindAllString(messageText, -1)
+	matches := extractIssueIDs(messageText)
 
 	for i := 0; i < len(matches); i++ {
 		issueID := matches[i]
@@ -128,6 +127,28 @@ func getJiraIssue(issueID string) gojira.Issue {
 	issueData := jira.Issue(issueID)
 
 	return issueData
+}
+
+func extractIssueIDs(message string) []string {
+	re := regexp.MustCompile(`\b(\w+)-(\d+)\b`)
+	matches := re.FindAllString(message, -1)
+
+	// @see http://www.dotnetperls.com/remove-duplicates-slice
+	encountered := map[string]bool{}
+	result := []string{}
+
+	for v := range matches {
+		if encountered[matches[v]] == true {
+			// Do not add duplicate.
+		} else {
+			// Record this element as an encountered element.
+			encountered[matches[v]] = true
+			// Append to result slice.
+			result = append(result, matches[v])
+		}
+	}
+	// Return the new slice.
+	return result
 }
 
 func getConfig() BotConfig {
