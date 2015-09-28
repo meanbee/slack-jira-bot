@@ -1,0 +1,8 @@
+language: go
+
+go:
+    - 1.5
+
+install:
+  - go get github.com/nlopes/slack
+  - go get github.com/plouc/go-jira-client
