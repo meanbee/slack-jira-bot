@@ -1,6 +1,10 @@
 package main
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/nlopes/slack"
+)
 
 func TestExtractIssueID(t *testing.T) {
 	result := extractIssueIDs("ABC-123")
@@ -39,5 +43,25 @@ func TestExtractIssueIDUniques(t *testing.T) {
 
 	if result[0] != "ABC-123" {
 		t.Errorf("Expected ABC-123, got %v", result[0])
+	}
+}
+
+func TestIgnoresMessageFromBot(t *testing.T) {
+	messageBot := slack.Msg{
+		SubType: "bot_message",
+	}
+
+	if !shouldIgnoreMessage(messageBot) {
+		t.Errorf("Message was from a bot, expected to ignore")
+	}
+}
+
+func TestDoesNotIgnoreMessageFromUser(t *testing.T) {
+	messageUser := slack.Msg{
+		SubType: "",
+	}
+
+	if shouldIgnoreMessage(messageUser) {
+		t.Errorf("Message was from a user, expected to not ignore")
 	}
 }

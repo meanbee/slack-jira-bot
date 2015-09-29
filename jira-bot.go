@@ -47,11 +47,10 @@ func main() {
 }
 
 func handleIncomingMessage(message slack.Msg) {
-	messageFrom := message.Username
 	messageText := message.Text
 
-	if messageFrom == getConfig().Username {
-		log.Print("handleMessage: Ignoring message, it was from me")
+	if shouldIgnoreMessage(message) {
+		log.Print("handleMessage: Ignoring message")
 		return
 	}
 
@@ -127,6 +126,10 @@ func getJiraIssue(issueID string) gojira.Issue {
 	issueData := jira.Issue(issueID)
 
 	return issueData
+}
+
+func shouldIgnoreMessage(message slack.Msg) bool {
+	return message.Username == getConfig().Username || message.SubType == "bot_message"
 }
 
 func extractIssueIDs(message string) []string {
