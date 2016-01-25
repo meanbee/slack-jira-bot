@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"strings"
 
 	"github.com/nlopes/slack"
 	gojira "github.com/plouc/go-jira-client"
@@ -141,6 +142,8 @@ func extractIssueIDs(message string) []string {
 	result := []string{}
 
 	for v := range matches {
+		// convert all match to upper case.
+		matches[v] = strings.ToUpper(matches[v])
 		if encountered[matches[v]] == true {
 			// Do not add duplicate.
 		} else {
