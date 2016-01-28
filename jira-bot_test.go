@@ -35,7 +35,7 @@ func TestExtractMultipleIssueIDs(t *testing.T) {
 }
 
 func TestExtractIssueIDUniques(t *testing.T) {
-	result := extractIssueIDs("ABC-123 ABC-123 ABC-123 ABC-123 ABC-123 ABC-123")
+	result := extractIssueIDs("ABC-123 ABC-123 ABC-123 ABC-123 ABC-123 ABC-123 abc-123 aBc-123")
 
 	if len(result) != 1 {
 		t.Errorf("Expected one result, got %v", len(result))
