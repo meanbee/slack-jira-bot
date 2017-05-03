@@ -66,11 +66,11 @@ func handleIncomingMessage(message slack.Msg) {
 }
 
 func respondToIssueMentioned(channel string, issueID string) {
-	defer func() {
-		if e := recover(); e != nil {
-			log.Printf("Exception responding to issue %s: %v", issueID, e)
-		}
-	}()
+	// defer func() {
+	// 	if e := recover(); e != nil {
+	// 		log.Printf("Exception responding to issue %s: %v", issueID, e)
+	// 	}
+	// }()
 
 	api := getSlackAPI()
 
@@ -80,6 +80,8 @@ func respondToIssueMentioned(channel string, issueID string) {
 	}
 
 	issueData := getJiraIssue(issueID)
+
+	log.Printf("Issue fetched: %v", issueData)
 
 	api.PostMessage(channel, formatMessage(issueData), params)
 }
@@ -95,6 +97,10 @@ func getChannel(channelID string) (*slack.Channel, error) {
 }
 
 func formatMessage(issue gojira.Issue) string {
+	log.Printf(issue.Key)
+	log.Printf(issue.Fields.Summary)
+	log.Printf(issue.Fields.Reporter.DisplayName)
+
 	message := fmt.Sprintf(
 		"*%s: %s* _Reported by %s_ - %s",
 		issue.Key,
@@ -111,8 +117,10 @@ func getJiraURL(issueKey string) string {
 }
 
 func getJiraIssue(issueID string) gojira.Issue {
-	jiraAPIPath := "/rest/api/latest"
-	jiraActivityPath := ""
+	log.Printf("getJiraIssue")
+
+	jiraAPIPath := "/rest/api/2"
+	jiraActivityPath := "/activity"
 
 	jira := gojira.NewJira(
 		getConfig().JiraBaseURL,
@@ -125,6 +133,8 @@ func getJiraIssue(issueID string) gojira.Issue {
 	)
 
 	issueData := jira.Issue(issueID)
+
+	log.Printf("issueData: %v", issueData)
 
 	return issueData
 }

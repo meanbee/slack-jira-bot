@@ -1,10 +1,6 @@
-FROM golang
+FROM golang:1.8
 
-ADD . /go/src/meanbee.com/slack/jira-bot/
-
-RUN go get github.com/nlopes/slack
-RUN go get github.com/plouc/go-jira-client
-
+ADD src /go/src
 RUN cd /go/src/meanbee.com/slack/jira-bot/ && go install
 
 ENTRYPOINT /go/bin/jira-bot
