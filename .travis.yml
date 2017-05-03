@@ -4,10 +4,10 @@ go:
   - 1.8
 
 install:
-  - echo "Nothing"
+  - true
 
 before_script:
-  - go vet meanbee.com/slack/jira-bot
+  - go vet ./src/github.com/meanbee/slack-jira-bot/...
 
 script:
-  - go test meanbee.com/slack/jira-bot
+  - go test ./src/github.com/meanbee/slack-jira-bot/...

@@ -1,6 +1,6 @@
 shell:
   build: build/docker/shell
   volumes:
-    - ./src/meanbee.com:/go/src/meanbee.com
+    - ./src/github.com/slack-jira-bot:/go/src/github.com/slack-jira-bot
     - ./src/vendor.yml:/go/src/vendor.yml
     - ./src/vendor:/go/src/vendor
