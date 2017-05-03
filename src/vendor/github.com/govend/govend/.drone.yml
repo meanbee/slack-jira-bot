@@ -1,0 +1,56 @@
+build:
+  test:
+    image: golang:$$GO_VERSION
+    environment:
+      - GO15VENDOREXPERIMENT=1
+    commands:
+      # install the tool
+      - go install
+
+      # remove the deps in the vendor directory
+      - rm -rf vendor
+
+      # download those deps again and prune
+      - govend -vlt --prune
+
+      # ensure the right deps were downloaded and pruned
+      - go install
+
+      # execute unit tests and write the coverage report
+      - go test -cover -coverprofile coverage.out
+
+  release:
+    image: golang:1.6
+    commands:
+      - go get github.com/mitchellh/gox
+      - go get github.com/jackspirou/tarpack
+      - gox
+      - tarpack govend_*
+    when:
+      event: tag
+      success: true
+
+matrix:
+  GO_VERSION:
+    - 1.5
+    - 1.5.1
+    - 1.5.2
+    - 1.5.3
+    - 1.6
+    - latest
+
+publish:
+  coverage:
+    when:
+      branch: master
+      success: true
+      matrix:
+        GO_VERSION: 1.6
+
+  github_release:
+    api_key: $$GITHUB_TOKEN
+    files:
+      - govend_*.tar.gz
+    when:
+      event: tag
+      success: true
