@@ -1,0 +1,6 @@
+shell:
+  build: build/docker/shell
+  volumes:
+    - ./src/meanbee.com:/go/src/meanbee.com
+    - ./src/vendor.yml:/go/src/vendor.yml
+    - ./src/vendor:/go/src/vendor
