@@ -1,8 +1,13 @@
 language: go
 
 go:
-    - 1.5
+  - 1.8
 
 install:
-  - go get github.com/nlopes/slack
-  - go get github.com/plouc/go-jira-client
+  - true
+
+before_script:
+  - go vet ./src/github.com/meanbee/slack-jira-bot/...
+
+script:
+  - go test ./src/github.com/meanbee/slack-jira-bot/...

@@ -1,0 +1,11 @@
+shell:
+  build: build/docker/shell
+  volumes:
+    - ./src/github.com/meanbee/slack-jira-bot:/go/src/github.com/meanbee/slack-jira-bot
+    - ./src/vendor.yml:/go/src/vendor.yml
+    - ./src/vendor:/go/src/vendor
+
+test:
+  extends:
+    service: shell
+  command: 'go test github.com/meanbee/slack-jira-bot/...'
