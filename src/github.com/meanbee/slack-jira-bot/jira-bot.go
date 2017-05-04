@@ -83,14 +83,43 @@ func respondToIssueMentioned(channel string, issueID string) {
 	api := getSlackAPI()
 	config, _ := getConfig()
 
+	issueData := getJiraIssue(issueID)
+
 	params := slack.PostMessageParameters{
 		Username: config.Username,
 		Markdown: true,
 	}
 
-	issueData := getJiraIssue(issueID)
+	var assignee = ""
 
-	api.PostMessage(channel, formatMessage(issueData), params)
+	if issueData.Fields.Assignee != nil {
+		assignee = issueData.Fields.Assignee.DisplayName
+	} else {
+		assignee = "Nobody"
+	}
+
+	attachment := slack.Attachment{
+		Pretext: formatMessage(issueData),
+		MarkdownIn: []string{"pretext", "fields"},
+		Fields: []slack.AttachmentField{
+			slack.AttachmentField{
+				Title: "Status",
+				Value: issueData.Fields.Status.Name,
+				Short: true,
+			},
+			slack.AttachmentField{
+				Title: "Assigned",
+				Value: assignee,
+				Short: true,
+			},
+		},
+	}
+
+	params.Attachments= []slack.Attachment{attachment}
+
+
+
+	api.PostMessage(channel, "", params)
 }
 
 func getSlackAPI() *slack.Client {
@@ -107,10 +136,9 @@ func getChannel(channelID string) (*slack.Channel, error) {
 
 func formatMessage(issue gojira.Issue) string {
 	message := fmt.Sprintf(
-		"*%s: %s* _Reported by %s_ - %s",
+		"*%s*: %s - %s",
 		issue.Key,
 		issue.Fields.Summary,
-		issue.Fields.Reporter.DisplayName,
 		getJiraURL(issue.Key),
 	)
 
