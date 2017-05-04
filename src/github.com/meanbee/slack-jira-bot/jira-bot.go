@@ -46,9 +46,10 @@ func main() {
 			case *slack.RTMError:
 				log.Printf("main: Error: %s\n", ev.Error())
 			case *slack.InvalidAuthEvent:
-				log.Printf("main: Invalid credentials")
+				log.Printf("main: Invalid Slack credentials")
+				os.Exit(2)
 			default:
-				// Ignore other events..
+			// Ignore other events..
 			}
 		}
 	}
