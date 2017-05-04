@@ -6,6 +6,7 @@ import (
 	"os"
 	"regexp"
 	"strings"
+	"errors"
 
 	"github.com/nlopes/slack"
 	gojira "github.com/plouc/go-jira-client"
@@ -22,6 +23,12 @@ type BotConfig struct {
 
 func main() {
 	api := getSlackAPI()
+	_, err := getConfig()
+
+	if err != nil {
+		log.Printf("Error extracting configuration: %v", err)
+		os.Exit(1)
+	}
 
 	rtm := api.NewRTM()
 	go rtm.ManageConnection()
@@ -66,16 +73,17 @@ func handleIncomingMessage(message slack.Msg) {
 }
 
 func respondToIssueMentioned(channel string, issueID string) {
-	 defer func() {
+	defer func() {
 		if e := recover(); e != nil {
 			log.Printf("Exception responding to issue %s: %v", issueID, e)
 		}
-	 }()
+	}()
 
 	api := getSlackAPI()
+	config, _ := getConfig()
 
 	params := slack.PostMessageParameters{
-		Username: getConfig().Username,
+		Username: config.Username,
 		Markdown: true,
 	}
 
@@ -85,7 +93,9 @@ func respondToIssueMentioned(channel string, issueID string) {
 }
 
 func getSlackAPI() *slack.Client {
-	return slack.New(getConfig().SlackAPIKey)
+	config, _ := getConfig()
+
+	return slack.New(config.SlackAPIKey)
 }
 
 func getChannel(channelID string) (*slack.Channel, error) {
@@ -107,20 +117,23 @@ func formatMessage(issue gojira.Issue) string {
 }
 
 func getJiraURL(issueKey string) string {
-	return getConfig().JiraBaseURL + "/browse/" + issueKey
+	config, _ := getConfig()
+
+	return config.JiraBaseURL + "/browse/" + issueKey
 }
 
 func getJiraIssue(issueID string) gojira.Issue {
 	jiraAPIPath := "/rest/api/2"
 	jiraActivityPath := "/activity"
+	config, _ := getConfig()
 
 	jira := gojira.NewJira(
-		getConfig().JiraBaseURL,
+		config.JiraBaseURL,
 		jiraAPIPath,
 		jiraActivityPath,
 		&gojira.Auth{
-			Login:    getConfig().JiraUsername,
-			Password: getConfig().JiraPassword,
+			Login:    config.JiraUsername,
+			Password: config.JiraPassword,
 		},
 	)
 
@@ -132,7 +145,9 @@ func getJiraIssue(issueID string) gojira.Issue {
 }
 
 func shouldIgnoreMessage(message slack.Msg) bool {
-	return message.Username == getConfig().Username || message.SubType == "bot_message"
+	config, _ := getConfig()
+
+	return message.Username == config.Username || message.SubType == "bot_message"
 }
 
 func extractIssueIDs(message string) []string {
@@ -159,12 +174,34 @@ func extractIssueIDs(message string) []string {
 	return result
 }
 
-func getConfig() BotConfig {
+func getConfig() (BotConfig, error) {
+
+	apiKey := os.Getenv("SLACK_API_KEY")
+	jiraBaseUrl := os.Getenv("JIRA_BASEURL")
+	jiraUsername := os.Getenv("JIRA_USERNAME")
+	jiraPassword := os.Getenv("JIRA_PASSWORD")
+
+	if apiKey == "" {
+		return BotConfig{}, errors.New("Expected API Key in SLACK_API_KEY environment variable")
+	}
+
+	if jiraBaseUrl == "" {
+		return BotConfig{}, errors.New("Expected the base URL of your Jira installation in JIRA_BASEURL environment variable")
+	}
+
+	if jiraUsername == "" {
+		return BotConfig{}, errors.New("Expected a username to access your Jira installation in JIRA_USERNAME environment variable")
+	}
+
+	if jiraUsername == "" {
+		return BotConfig{}, errors.New("Expected a password to access your Jira installation in JIRA_PASSWORD environment variable")
+	}
+
 	return BotConfig{
 		Username:     "jirabot",
-		SlackAPIKey:  os.Getenv("SLACK_API_KEY"),
-		JiraBaseURL:  os.Getenv("JIRA_BASEURL"),
-		JiraUsername: os.Getenv("JIRA_USERNAME"),
-		JiraPassword: os.Getenv("JIRA_PASSWORD"),
-	}
+		SlackAPIKey:  apiKey,
+		JiraBaseURL:  jiraBaseUrl,
+		JiraUsername: jiraUsername,
+		JiraPassword: jiraPassword,
+	}, nil
 }
