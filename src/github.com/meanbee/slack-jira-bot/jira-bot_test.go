@@ -58,6 +58,7 @@ func TestIgnoresMessageFromBot(t *testing.T) {
 
 func TestDoesNotIgnoreMessageFromUser(t *testing.T) {
 	messageUser := slack.Msg{
+		Username: "Eric",
 		SubType: "",
 	}
 
