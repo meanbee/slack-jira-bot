@@ -11,21 +11,15 @@ With the Jira integration in Slack being a bit light, we decided to implement a 
 ![](https://kibako-dev.s3.amazonaws.com/kibako/32F4EE67-C0CB-4C02-BA84-AD86DF9082D9/ScreenShot2015-09-28at18.24.12.png)
 
 # Installation
-
-## From Source
-
-    go get github.com/nlopes/slack
-    go get github.com/plouc/go-jira-client
-    go get github.com/meanbee/slack-jira-bot
-    
-    cd $GOPATH/github.com/meanbee/slack-jira-bot
-    go install
-    
-    $GOPATH/bin/jira-bot
     
 ## Docker Image
 
-    docker pull quay.io/meanbee/slack-jira-bot
+    docker run -it --restart=always -d \
+        -e JIRA_BASEURL=https://yourjirainstall.atlassian.net \
+        -e JIRA_USERNAME='yourjirausername' \
+        -e JIRA_PASSWORD='yourjirapassword' \
+        -e SLACK_API_KEY='yourslackapikey' \
+        meanbee/slack-jira-bot:latest
     
 # Configuration
 
