@@ -4,11 +4,11 @@
 
 A killer feature of the integration between Hipchat and Jira is the issue expansion.  Whenever a Jira issue is mention in the chat, the Jira integration would pop up some high level information about the issue and a link.
 
-![](https://kibako-dev.s3.amazonaws.com/kibako/D4C2CE56-D016-4F94-B416-3BB91B93AD58/ScreenShot2015-09-28at18.19.08.png)
+![](https://punkstar.keybase.pub/github/slack-jira-bot/screenshots/hipchat_example.png)
 
 With the Jira integration in Slack being a bit light, we decided to implement a simple bot using the [Slack RTM API](https://api.slack.com/rtm):
 
-![](https://kibako-dev.s3.amazonaws.com/kibako/32F4EE67-C0CB-4C02-BA84-AD86DF9082D9/ScreenShot2015-09-28at18.24.12.png)
+![](https://punkstar.keybase.pub/github/slack-jira-bot/screenshots/message_example_with_attachment.png)
 
 # Installation
     
