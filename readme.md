@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/meanbee/slack-jira-bot.svg?branch=travis)](https://travis-ci.org/meanbee/slack-jira-bot)
 
+> **Update 2017-08-24:** If you're looking to get setup quickly then you should check out https://slack.atlassian.io before using this image.  If that's not for you - come back!
+
 A killer feature of the integration between Hipchat and Jira is the issue expansion.  Whenever a Jira issue is mention in the chat, the Jira integration would pop up some high level information about the issue and a link.
 
 ![](https://punkstar.keybase.pub/github/slack-jira-bot/screenshots/hipchat_example.png)
