@@ -1,4 +1,6 @@
-# Slack Jira Issue Expansion
+# (Deprecated) Slack Jira Issue Expansion
+
+_Notice:_ This project is no longer being maintained and the APIs that is uses are [deprecated](https://github.com/meanbee/slack-jira-bot/issues/12).
 
 [![Build Status](https://travis-ci.org/meanbee/slack-jira-bot.svg?branch=travis)](https://travis-ci.org/meanbee/slack-jira-bot)
 
